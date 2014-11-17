@@ -8,7 +8,8 @@ define(function (require, exports, module) {
 
   var CommandManager  = brackets.getModule('command/CommandManager'),
       Commands        = brackets.getModule('command/Commands'),
-      DocumentManager = brackets.getModule('document/DocumentManager');
+      DocumentManager = brackets.getModule('document/DocumentManager'),
+      Menus           = brackets.getModule('command/Menus');
 
   function processJSDocument(document) {
     var text = document.getText();
@@ -49,4 +50,11 @@ define(function (require, exports, module) {
   }
 
   $(DocumentManager).on("documentSaved", onDocumentSaved);
+
+  var COMMAND_ID = "useStrictJs";
+  var MENU_TEXT = "Add use strict directive";
+  CommandManager.register(MENU_TEXT, COMMAND_ID, onDocumentSaved);
+  var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
+  menu.addMenuDivider();
+  menu.addMenuItem(COMMAND_ID);
 });
