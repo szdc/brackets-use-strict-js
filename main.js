@@ -25,7 +25,7 @@ define(function (require, exports, module) {
     
     var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
     menu.addMenuDivider();
-    menu.addMenuItem(UseStrictCommands.ENABLE_STRICT);
+    menu.addMenuItem(UseStrictCommands.ENABLE_STRICT, 'Ctrl-Shift-J');
     menu.addMenuItem(UseStrictCommands.ENABLE_STRICT_ON_SAVE);
     
     setupPreferences();
