@@ -20,12 +20,21 @@ define(function (require, exports, module) {
     return /\/\*js[lh]int.+?node:\s?true/m.test(document.getText());
   }
   
+  function getPaddedString(numSpaces) {
+    var paddedString = '';
+    for (var i = 0; i < numSpaces; i++) {
+      paddedString += ' ';
+    }
+    return paddedString;
+  }
+  
   function log(output) {
     console.log(UseStrictStrings.CONSOLE_PREFIX + output);
   }
     
-  exports.isLanguage = isLanguage;
-  exports.isNodeJS   = isNodeJS;
-  exports.isStrict   = isStrict;
-  exports.log        = log;
+  exports.isLanguage      = isLanguage;
+  exports.isNodeJS        = isNodeJS;
+  exports.isStrict        = isStrict;
+  exports.getPaddedString = getPaddedString;
+  exports.log             = log;
 });

@@ -1,4 +1,4 @@
-/*jslint vars: true, node: true */
+/*jslint vars: true */
 /*global define, $, brackets, window, console */
 
 define(function (require, exports, module) {
@@ -76,29 +76,41 @@ define(function (require, exports, module) {
     // Is this file already strict?
     var isStrict = Helpers.isStrict(document);
     Helpers.log('Is Strict: ' + isStrict);
-
-    if (!isStrict) {
-      // NodeJS files have the statement at the top of the file
-      var isNodeJS = Helpers.isNodeJS(document);
-      Helpers.log('Is Node.JS file: ' + isNodeJS);
-      
-      // Add the statement below any jslint/jshint/comments
-      // The first line that isn't 
-      var insertionLineIndex = 0;
-      var lines = text.split('\n');
-      lines.some(function (line, index) {
-        if (line.search(/\/\*/) === -1) {
-          insertionLineIndex = index;
-          Helpers.log('Inserting at line: ' + insertionLineIndex);
-          return true;
-        }
-      });
-      
-      document.replaceRange("\n'use strict';\n", { line: insertionLineIndex, ch: 0 });
-      if (!document.isUntitled()) {
-        CommandManager.execute(Commands.FILE_SAVE, { doc: document });
+    if (isStrict) {
+      return;
+    }
+    
+    // Is this file using Node.JS?
+    var isNodeJS = Helpers.isNodeJS(document);
+    Helpers.log('Is Node.JS file: ' + isNodeJS);
+    
+    var insertionLineIndex = 0,
+        useStrictStatement = "'use strict';\n",
+        iterator = isNodeJS ? nodeJSIterator : defaultIterator,
+        lines = text.split('\n');
+    
+    lines.some(iterator);
+    
+    Helpers.log('Inserting at line index: ' + insertionLineIndex);
+    document.replaceRange(useStrictStatement, { line: insertionLineIndex, ch: 0 });
+    if (!document.isUntitled()) {
+      CommandManager.execute(Commands.FILE_SAVE, { doc: document });
+    }
+    
+    function nodeJSIterator(line, index) {
+      if (line.search(/\/\*/) === -1) {
+        insertionLineIndex = index;
+        return true;
       }
-      
+    }
+    
+    function defaultIterator(line, index) {
+      if (line.search(/{$/) !== -1) {
+        var spaceUnits = PreferencesManager.get('spaceUnits');
+        useStrictStatement = Helpers.getPaddedString(spaceUnits) + useStrictStatement;
+        insertionLineIndex = index + 1;
+        return true;
+      }
     }
   }
 });
