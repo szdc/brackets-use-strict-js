@@ -20,8 +20,17 @@ define(function (require, exports, module) {
   function setup() {
     $(DocumentManager).on('documentSaved', onDocumentSaved);
     
-    CommandManager.register(UseStrictStrings.CMD_ENABLE_STRICT, UseStrictCommands.ENABLE_STRICT, processDocument);
-    CommandManager.register(UseStrictStrings.CMD_ENABLE_STRICT_ON_SAVE, UseStrictCommands.ENABLE_STRICT_ON_SAVE, toggleStrict);
+    CommandManager.register(
+      UseStrictStrings.CMD_ENABLE_STRICT, 
+      UseStrictCommands.ENABLE_STRICT, 
+      processDocument
+    );
+    
+    CommandManager.register(
+      UseStrictStrings.CMD_ENABLE_STRICT_ON_SAVE, 
+      UseStrictCommands.ENABLE_STRICT_ON_SAVE, 
+      toggleStrict
+    );
     
     var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
     menu.addMenuDivider();
@@ -74,14 +83,17 @@ define(function (require, exports, module) {
       });
       
       document.replaceRange("\n'use strict';\n", { line: insertionLineIndex, ch: 0 });
-      CommandManager.execute(Commands.FILE_SAVE, { doc: document });
+      if (!document.isUntitled()) {
+        CommandManager.execute(Commands.FILE_SAVE, { doc: document });
+      }
     }
   }
 
   function processDocument() {
     var document = DocumentManager.getCurrentDocument();
     if (document !== null) {
-      if (document.language.getId() === 'javascript') {
+      var language = document.language.getId();
+      if (language === 'javascript' || language === 'unknown') {
         processJSDocument(document);
       }
     }
