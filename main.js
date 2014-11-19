@@ -57,8 +57,26 @@ define(function (require, exports, module) {
     preferences.set(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id, enableStrictOnSave);
     preferences.save();
   }
+  
+  function onDocumentSaved() {
+    var document = DocumentManager.getCurrentDocument();
+    var enableStrictOnSave = preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
+    
+    if (enableStrictOnSave && documentIsJSOrUntitled(document)) {
+      processDocument(document);
+    }
+  }
 
-  function processJSDocument(document) {
+  function documentIsJSOrUntitled(document) {
+    if (document !== null) {
+      var language = document.language.getId();
+      return (language === 'javascript' || language === 'unknown');
+    }
+  }
+  
+  function processDocument(document) {
+    document = document || DocumentManager.getCurrentDocument();
+    
     var text = document.getText();
     
     // Is this file already strict?
@@ -86,23 +104,6 @@ define(function (require, exports, module) {
       if (!document.isUntitled()) {
         CommandManager.execute(Commands.FILE_SAVE, { doc: document });
       }
-    }
-  }
-
-  function processDocument() {
-    var document = DocumentManager.getCurrentDocument();
-    if (document !== null) {
-      var language = document.language.getId();
-      if (language === 'javascript' || language === 'unknown') {
-        processJSDocument(document);
-      }
-    }
-  }
-
-  function onDocumentSaved() {
-    var enableStrictOnSave = preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
-    if (enableStrictOnSave) {
-      processDocument();
     }
   }
 });
