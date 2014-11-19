@@ -1,7 +1,7 @@
 brackets-use-strict-js
 ======================
 
-Adds the `use strict;` statement to the top of your JS file on save.
+Adds the `'use strict';` statement to the top of your JS file on save.
 
 Two menu options:
 - __Enable Strict Mode__: Immediately checks the current file for the use strict statement.
