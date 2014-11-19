@@ -4,6 +4,8 @@
 define(function (require, exports, module) {
   'use strict';
   
-  exports.ENABLE_STRICT         = 'enableStrict';
-  exports.ENABLE_STRICT_ON_SAVE = 'enableStrictOnSave';
+  var packageString = 'useStrictJS.'
+  
+  exports.ENABLE_STRICT         = packageString + 'enableStrict';
+  exports.ENABLE_STRICT_ON_SAVE = packageString + 'enableStrictOnSave';
 });
