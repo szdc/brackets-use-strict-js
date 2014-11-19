@@ -71,23 +71,19 @@ define(function (require, exports, module) {
   function processDocument(document) {
     document = document || DocumentManager.getCurrentDocument();
     
-    var text = document.getText();
-    
-    // Is this file already strict?
     var isStrict = Helpers.isStrict(document);
     Helpers.log('Is Strict: ' + isStrict);
     if (isStrict) {
       return;
     }
     
-    // Is this file using Node.JS?
     var isNodeJS = Helpers.isNodeJS(document);
     Helpers.log('Is Node.JS file: ' + isNodeJS);
     
     var insertionLineIndex = 0,
         useStrictStatement = "'use strict';\n",
         iterator = isNodeJS ? nodeJSIterator : defaultIterator,
-        lines = text.split('\n');
+        lines = document.getText().split('\n');
     
     lines.some(iterator);
     
