@@ -1,4 +1,4 @@
-/*jslint vars: true */
+/*jslint vars: true, node: true */
 /*global define, $, brackets, window, console */
 
 define(function (require, exports, module) {
@@ -11,7 +11,8 @@ define(function (require, exports, module) {
       ExtensionUtils       = brackets.getModule( 'utils/ExtensionUtils' ),
       UseStrictStrings     = require('modules/strings'),
       UseStrictCommands    = require('modules/commands'),
-      UseStrictPreferences = require('modules/preferences');
+      UseStrictPreferences = require('modules/preferences'),
+      Helpers              = require('modules/helpers');
 
   var preferences = PreferencesManager.getExtensionPrefs('use-strict-js');
   
@@ -62,15 +63,8 @@ define(function (require, exports, module) {
     var document = DocumentManager.getCurrentDocument();
     var enableStrictOnSave = preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
     
-    if (enableStrictOnSave && documentIsJSOrUntitled(document)) {
+    if (enableStrictOnSave && Helpers.isLanguage(document, ['javascript', 'unknown'])) {
       processDocument(document);
-    }
-  }
-
-  function documentIsJSOrUntitled(document) {
-    if (document !== null) {
-      var language = document.language.getId();
-      return (language === 'javascript' || language === 'unknown');
     }
   }
   
@@ -80,13 +74,13 @@ define(function (require, exports, module) {
     var text = document.getText();
     
     // Is this file already strict?
-    var isStrict = /^\s*?["']use strict["']/m.test(text);
-    console.log(UseStrictStrings.CONSOLE_PREFIX + 'Is Strict: ' + isStrict);
+    var isStrict = Helpers.isStrict(document);
+    Helpers.log('Is Strict: ' + isStrict);
 
     if (!isStrict) {
       // NodeJS files have the statement at the top of the file
-      var isNodeJS = /\/\*js[lh]int.+?node:\s?true/m.test(text);
-      console.log(UseStrictStrings.CONSOLE_PREFIX + 'Is Node.JS file: ' + isNodeJS);
+      var isNodeJS = Helpers.isNodeJS(document);
+      Helpers.log('Is Node.JS file: ' + isNodeJS);
       
       // Add the statement below any jslint/jshint/comments
       // The first line that isn't 
@@ -95,7 +89,7 @@ define(function (require, exports, module) {
       lines.some(function (line, index) {
         if (line.search(/\/\*/) === -1) {
           insertionLineIndex = index;
-          console.log(UseStrictStrings.CONSOLE_PREFIX + 'Insert at line: ' + insertionLineIndex);
+          Helpers.log('Inserting at line: ' + insertionLineIndex);
           return true;
         }
       });
@@ -104,6 +98,7 @@ define(function (require, exports, module) {
       if (!document.isUntitled()) {
         CommandManager.execute(Commands.FILE_SAVE, { doc: document });
       }
+      
     }
   }
 });
