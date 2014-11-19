@@ -1,33 +1,51 @@
-/*jslint node: true */
+/*jslint vars: true */
 /*global define, $, brackets, window, console */
 
-'use strict';
-
 define(function (require, exports, module) {
+  
+  var CommandManager       = brackets.getModule('command/CommandManager'),
+      Commands             = brackets.getModule('command/Commands'),
+      Menus                = brackets.getModule('command/Menus'),
+      DocumentManager      = brackets.getModule('document/DocumentManager'),
+      PreferencesManager   = brackets.getModule('preferences/PreferencesManager'),
+      ExtensionUtils       = brackets.getModule( 'utils/ExtensionUtils' ),
+      UseStrictStrings     = require('modules/strings'),
+      UseStrictCommands    = require('modules/commands'),
+      UseStrictPreferences = require('modules/preferences');
 
-  var CommandManager     = brackets.getModule('command/CommandManager'),
-      Commands           = brackets.getModule('command/Commands'),
-      DocumentManager    = brackets.getModule('document/DocumentManager'),
-      Menus              = brackets.getModule('command/Menus'),
-      PreferencesManager = brackets.getModule('preferences/PreferencesManager');
-
-  var CMD_ENABLE_STRICT         = 'enableStrict',
-      CMD_ENABLE_STRICT_ON_SAVE = 'enableStrictOnSave',
-      PREF_ENABLE_STRICT_ON_SAVE = 'enableStrictOnSave',
-      CONSOLE_PREFIX = '[use-strict-js]: ';
-
-  var preferences = PreferencesManager.getExtensionPrefs('use-strict');
-  preferences.definePreference(PREF_ENABLE_STRICT_ON_SAVE, 'boolean', true);
-  preferences.save();
-  preferences.on('change', function() {
-    var enableStrictOnSave = preferences.get(PREF_ENABLE_STRICT_ON_SAVE)
-    var menuItem = CommandManager.get(CMD_ENABLE_STRICT_ON_SAVE);
-    menuItem.setChecked(enableStrictOnSave);
-  });
-
+  var preferences = PreferencesManager.getExtensionPrefs('use-strict-js');
+  
+  setup();
+  
+  function setup() {
+    $(DocumentManager).on('documentSaved', onDocumentSaved);
+    
+    CommandManager.register(UseStrictStrings.CMD_ENABLE_STRICT, UseStrictCommands.ENABLE_STRICT, processDocument);
+    CommandManager.register(UseStrictStrings.CMD_ENABLE_STRICT_ON_SAVE, UseStrictCommands.ENABLE_STRICT_ON_SAVE, toggleStrict);
+    
+    var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
+    menu.addMenuDivider();
+    menu.addMenuItem(UseStrictCommands.ENABLE_STRICT);
+    menu.addMenuItem(UseStrictCommands.ENABLE_STRICT_ON_SAVE);
+    
+    setupPreferences();
+  }
+  
+  function setupPreferences() {
+    var preference = UseStrictPreferences.ENABLE_STRICT_ON_SAVE;
+    preferences.definePreference(preference.id, preference.type, preference.initial);
+    preferences.save();
+    
+    preferences.on('change', function() {
+      var enableStrictOnSave = preferences.get(preference.id);
+      var menuItem = CommandManager.get(UseStrictCommands.ENABLE_STRICT_ON_SAVE);
+      menuItem.setChecked(enableStrictOnSave);
+    });
+  }
+ 
   function toggleStrict() {
-    var enableStrictOnSave = !preferences.get(PREF_ENABLE_STRICT_ON_SAVE);
-    preferences.set(PREF_ENABLE_STRICT_ON_SAVE, enableStrictOnSave);
+    var enableStrictOnSave = !preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
+    preferences.set(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id, enableStrictOnSave);
     preferences.save();
   }
 
@@ -36,12 +54,12 @@ define(function (require, exports, module) {
     
     // Is this file already strict?
     var isStrict = /^\s*?["']use strict["']/m.test(text);
-    console.log(CONSOLE_PREFIX + 'Is Strict: ' + isStrict);
+    console.log(UseStrictStrings.CONSOLE_PREFIX + 'Is Strict: ' + isStrict);
 
     if (!isStrict) {
       // NodeJS files have the statement at the top of the file
       var isNodeJS = /\/\*js[lh]int.+?node:\s?true/m.test(text);
-      console.log(CONSOLE_PREFIX + 'Is Node.JS file: ' + isNodeJS);
+      console.log(UseStrictStrings.CONSOLE_PREFIX + 'Is Node.JS file: ' + isNodeJS);
       
       // Add the statement below any jslint/jshint/comments
       // The first line that isn't 
@@ -50,7 +68,7 @@ define(function (require, exports, module) {
       lines.some(function (line, index) {
         if (line.search(/\/\*/) === -1) {
           insertionLineIndex = index;
-          console.log(CONSOLE_PREFIX + 'Insert at line: ' + insertionLineIndex);
+          console.log(UseStrictStrings.CONSOLE_PREFIX + 'Insert at line: ' + insertionLineIndex);
           return true;
         }
       });
@@ -70,19 +88,9 @@ define(function (require, exports, module) {
   }
 
   function onDocumentSaved() {
-    var enableStrictOnSave = preferences.get(PREF_ENABLE_STRICT_ON_SAVE);
+    var enableStrictOnSave = preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
     if (enableStrictOnSave) {
       processDocument();
     }
   }
-
-  $(DocumentManager).on('documentSaved', onDocumentSaved);
-
-  CommandManager.register('Enable Strict Mode', CMD_ENABLE_STRICT, processDocument);
-  CommandManager.register('Enable Strict Mode On Save', CMD_ENABLE_STRICT_ON_SAVE, toggleStrict);
-
-  var menu = Menus.getMenu(Menus.AppMenuBar.EDIT_MENU);
-  menu.addMenuDivider();
-  menu.addMenuItem(CMD_ENABLE_STRICT);
-  menu.addMenuItem(CMD_ENABLE_STRICT_ON_SAVE);
 });
