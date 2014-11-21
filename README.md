@@ -1,8 +1,11 @@
 brackets-use-strict-js
 ======================
 
-Adds the `'use strict';` statement to the top of your JS file on save.
-Supports the function form (inserts on the first line after the first opening brace) and the Node.JS form (based on having `node: true` set in your jslint/jshint file-level settings; inserts on the first line after any jslint/jshint settings)
+Adds the `'use strict';` statement to the top of your JS file on save. 
+
+&#10003; Supports the function form (inserts on the first line after the first opening brace) 
+
+&#10003; Supports the Node.JS form (based on having `node: true` set in your jslint/jshint file-level settings; inserts on the first line after any jslint/jshint settings)
 
 **Menu options**:
 - **Enable Strict Mode (Ctrl-Shift-J)**: Immediately checks the current file for the use strict statement, irrespective of the language.
