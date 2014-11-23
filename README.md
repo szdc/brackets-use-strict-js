@@ -1,4 +1,4 @@
-brackets-use-strict-js
+Brackets Extension: Strict JavaScript
 ======================
 
 Adds the `'use strict';` statement to the top of your JS file on save. 
