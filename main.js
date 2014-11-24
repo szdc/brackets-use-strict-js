@@ -2,6 +2,7 @@
 /*global define, $, brackets, window, console */
 
 define(function (require, exports, module) {
+  'use strict';
   
   var CommandManager       = brackets.getModule('command/CommandManager'),
       Commands             = brackets.getModule('command/Commands'),
