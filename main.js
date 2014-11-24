@@ -1,4 +1,4 @@
-/*jslint vars: true */
+/*jslint vars: true, node: true */
 /*global define, $, brackets, window, console */
 
 define(function (require, exports, module) {
@@ -94,7 +94,8 @@ define(function (require, exports, module) {
     }
     
     function nodeJSIterator(line, index) {
-      if (line.search(/\/\*/) === -1) {
+      if (line.search(/(^\s*?(\/|\*)|\*\/)/m) === -1 && line.length !== 0) {
+        useStrictStatement = useStrictStatement + '\n';
         insertionLineIndex = index;
         return true;
       }

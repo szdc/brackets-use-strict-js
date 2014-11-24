@@ -17,7 +17,7 @@ define(function (require, exports, module) {
   }
   
   function isNodeJS(document) {
-    return /\/\*js[lh]int.+?node:\s?true/m.test(document.getText());
+    return /\/\*js[lh]int[^\*\/]+?node:\s?true/gm.test(document.getText());
   }
   
   function getPaddedString(numSpaces) {
