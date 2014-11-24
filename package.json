@@ -3,7 +3,7 @@
   "title": "Strict JavaScript",
   "description": "Adds the 'use strict' statement to the current JavaScript/untitled file on command/save.",
   "homepage": "https://github.com/szdc/brackets-use-strict-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Jack (https://github.com/szdc)",
   "license": "MIT",
   "engines": {
