@@ -11,10 +11,12 @@ Adds the `'use strict';` statement to the top of your JS file on save.
 })()
 ```
 
-&#10003; Supports the Node.JS form (based on having `node: true` set in your jslint/jshint file-level settings; inserts on the first line after any jslint/jshint settings)
+&#10003; Supports the Node.JS form (based on having `node: true` set in your jslint/jshint file-level settings; inserts a the statement and a new line before the first line of code)
 ```
 /*jslint node: true */
 'use strict';
+
+var app = require('express');
 ...
 ```
 
