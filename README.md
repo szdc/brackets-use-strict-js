@@ -24,5 +24,5 @@ var app = require('express');
 - **Enable Strict Mode (Ctrl-Shift-J)**: Immediately checks the current file for the use strict statement, irrespective of the language.
 - **Enable Strict Mode On Save**: Checks the current file when saved.  (`.js` and `untitled` files only)
 
-# To do
-- Publish to the Brackets extension registry.
+# Installation
+In Brackets, choose File > Extension Manager and click on the Available tab.  Then search for `use strict`.
