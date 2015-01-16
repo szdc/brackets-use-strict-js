@@ -64,7 +64,7 @@ define(function (require, exports, module) {
     var document = DocumentManager.getCurrentDocument();
     var enableStrictOnSave = preferences.get(UseStrictPreferences.ENABLE_STRICT_ON_SAVE.id);
     
-    if (enableStrictOnSave && Helpers.isLanguage(document, ['javascript', 'unknown'])) {
+    if (enableStrictOnSave && Helpers.isLanguage(document, ['javascript'])) {
       processDocument(document);
     }
   }
